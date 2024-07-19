@@ -1,10 +1,13 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const connectWithDB = require("./config/db");
-const cookieSession = require("cookie-session");
-const cookieParser = require("cookie-parser");
-const cloudinary = require("cloudinary").v2;
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const connectWithDB = require('./config/db');
+const cookieSession = require('cookie-session');
+const cookieParser = require('cookie-parser');
+const cloudinary = require('cloudinary').v2;
+
+console.log('DB_URL:', process.env.DB_URL);
+console.log('CLIENT_URL:', process.env.CLIENT_URL);
 
 // connect with database
 connectWithDB();
@@ -24,11 +27,11 @@ app.use(cookieParser());
 // Initialize cookie-session middleware
 app.use(
   cookieSession({
-    name: "session",
+    name: 'session',
     maxAge: process.env.COOKIE_TIME * 24 * 60 * 60 * 1000,
     keys: [process.env.SESSION_SECRET],
     secure: true, // Only send over HTTPS
-    sameSite: "none", // Allow cross-origin requests
+    sameSite: 'none', // Allow cross-origin requests
     httpOnly: true, // Makes the cookie accessible only on the server-side
   })
 );
@@ -45,11 +48,11 @@ app.use(
 );
 
 // use express router
-app.use("/", require("./routes"));
+app.use('/', require('./routes'));
 
 app.listen(process.env.PORT || 8000, (err) => {
   if (err) {
-    console.log("Error in connecting to server: ", err);
+    console.log('Error in connecting to server: ', err);
   }
   console.log(`Server is running on port no. ${process.env.PORT}`);
 });
