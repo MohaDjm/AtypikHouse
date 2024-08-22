@@ -13,12 +13,20 @@ import BookingsPage from './pages/BookingsPage';
 import PlacesFormPage from './pages/PlacesFormPage';
 import PlacePage from './pages/PlacePage';
 import SingleBookedPlace from './pages/SingleBookedPlace';
+import NotFoundPage from './pages/NotFoundPage';
+
+import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminEquipments from './pages/AdminPerks';
+// import AdminProperties from './pages/AdminProperties';
+// import AdminComments from './pages/AdminComments';
+
 import axiosInstance from './utils/axios';
 import { UserProvider } from './providers/UserProvider';
 import { PlaceProvider } from './providers/PlaceProvider';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { getItemFromLocalStorage } from './utils';
-import NotFoundPage from './pages/NotFoundPage';
+import ProtectedAdminRoute from './components//ui/ProtectedAdminRoute';
 
 function App() {
   useEffect(() => {
@@ -46,6 +54,12 @@ function App() {
                 path="/account/bookings/:id"
                 element={<SingleBookedPlace />}
               />
+              {/* Routes pour l'administration */}
+              <Route path="/admin/dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+              <Route path="/admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
+              <Route path="/admin/equipments" element={<ProtectedAdminRoute><AdminEquipments /></ProtectedAdminRoute>} />
+              {/* <Route path="/admin/properties" element={<ProtectedAdminRoute><AdminProperties /></ProtectedAdminRoute>} />
+              <Route path="/admin/comments" element={<ProtectedAdminRoute><AdminComments /></ProtectedAdminRoute>} /> */}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

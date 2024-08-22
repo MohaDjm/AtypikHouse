@@ -18,11 +18,14 @@ export const useProvideAuth = () => {
 
     useEffect(() => {
         const storedUser = getItemFromLocalStorage('user');
+        console.log("Stored user from localStorage:", storedUser);
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const parsedUser = JSON.parse(storedUser);
+            console.log("Parsed user:", parsedUser);
+            setUser(parsedUser);
         }
-        setLoading(false)
-    }, [])
+        setLoading(false);
+    }, []);
 
     const register = async (formData) => {
         const { name, email, password } = formData;
@@ -54,7 +57,13 @@ export const useProvideAuth = () => {
                 email,
                 password,
             });
+
+            // Vérifiez que l'utilisateur et le token sont bien retournés
+        console.log("User data received: ", data.user);
+        console.log("Token received: ", data.token);
+
             if (data.user && data.token) {
+                console.log("Is Admin: ", data.user.isAdmin);
                 setUser(data.user)
                 // save user and token in local storage
                 setItemsInLocalStorage('user', data.user)

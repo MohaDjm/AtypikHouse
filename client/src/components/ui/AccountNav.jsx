@@ -1,8 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '../../providers/UserProvider';
 
 const AccountNav = () => {
   const { pathname } = useLocation();
   let subpage = pathname.split('/')?.[2];
+  const { user } = useContext(UserContext);
 
   if (subpage === undefined) {
     subpage = 'profile';
@@ -71,6 +74,27 @@ const AccountNav = () => {
         </svg>
         My accomodations
       </Link>
+      {user?.isAdmin && (
+        <Link className={linkClases('dashboard')} to={'/admin/dashboard'}>
+          {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 3h18M3 8h18M3 13h18M3 18h18"
+              />
+            </svg>
+          }
+          Admin Dashboard
+        </Link>
+      )}
     </nav>
   );
 };

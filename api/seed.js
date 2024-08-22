@@ -4,23 +4,41 @@ const { faker } = require('@faker-js/faker');
 const User = require('./models/User');
 const Place = require('./models/Place');
 
-mongoose.connect('mongodb://localhost:27017/atypikhousebd', {
+mongoose.connect('mongodb+srv://mohamed:L067kPOjNxjl6qam@cluster0.exha1ef.mongodb.net/atypikhousebd?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(async () => {
   console.log('DB connected successfully');
+
+  
+  // Création d'un utilisateur admin
+  const adminUser = {
+    name: 'Admin AtypikHouse',
+    email: 'admin@atypikhouse.com',
+    password: 'AdminAtypik*',
+    isAdmin: true,
+  };
+
+  let existingAdmin = await User.findOne({ email: adminUser.email });
+  console.log('Existing Admin:', existingAdmin); 
+  if (!existingAdmin) {
+    existingAdmin = await User.create(adminUser);
+    console.log('Admin user created successfully');
+  } else {
+    console.log('Admin user already exists');
+  }
 
   // Vérification et création d'utilisateurs si n'existent pas
   const users = [
     {
       name: 'John Doe',
       email: 'john@example.com',
-      password: await bcrypt.hash('password123', 10), // Hachage du mot de passe
+      password: await bcrypt.hash('password123', 10),
     },
     {
       name: 'Jane Smith',
       email: 'jane@example.com',
-      password: await bcrypt.hash('password123', 10), // Hachage du mot de passe
+      password: await bcrypt.hash('password123', 10),
     }
   ];
 
