@@ -25,21 +25,14 @@ const app = express();
 // Gestion des cookies
 app.use(cookieParser());
 
-// Configuration CORS
+// Configuration unique de CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
 );
-const cors = require('cors');
-
-app.use(cors({
-  origin: 'https://atypik-house-six.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
-
 
 // Initialisation de cookie-session middleware
 app.use(
@@ -47,9 +40,9 @@ app.use(
     name: 'session',
     maxAge: process.env.COOKIE_TIME * 24 * 60 * 60 * 1000,
     keys: [process.env.SESSION_SECRET],
-    secure: true, // Seulement envoyer sur HTTPS
-    sameSite: 'none', // Permet les requêtes cross-origin
-    httpOnly: true, // Rendre le cookie accessible uniquement côté serveur
+    secure: true,
+    sameSite: 'none',
+    httpOnly: true,
   })
 );
 
