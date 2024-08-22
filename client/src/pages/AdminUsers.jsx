@@ -9,11 +9,13 @@ const AdminUsers = () => {
   const [editedName, setEditedName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
 
+  const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     axios
-      .get('http://localhost:4000/api/admin/users', {
+      .get(`${API_BASE_URL}/api/admin/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -22,7 +24,7 @@ const AdminUsers = () => {
         setUsers(response.data.data);
       })
       .catch((error) => console.error(error));
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleDelete = (userId) => {
     const adminUser = users.find((user) => user._id === userId && user.isAdmin);
@@ -40,7 +42,7 @@ const AdminUsers = () => {
       window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')
     ) {
       axios
-        .delete(`http://localhost:4000/api/admin/users/${userId}`, {
+        .delete(`${API_BASE_URL}/api/admin/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +64,7 @@ const AdminUsers = () => {
     ) {
       axios
         .put(
-          `http://localhost:4000/api/admin/update-user-role/${userId}`,
+          `${API_BASE_URL}/api/admin/update-user-role/${userId}`,
           { role: newRole },
           {
             headers: {
@@ -94,7 +96,7 @@ const AdminUsers = () => {
 
     axios
       .put(
-        `http://localhost:4000/api/admin/update-user/${userId}`,
+        `${API_BASE_URL}/api/admin/update-user/${userId}`,
         { name: editedName, email: editedEmail },
         {
           headers: {

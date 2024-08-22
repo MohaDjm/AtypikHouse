@@ -123,11 +123,13 @@ const AdminPerks = () => {
   const [newPerk, setNewPerk] = useState('');
   const [newPerkIcon, setNewPerkIcon] = useState('');
 
+  const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     axios
-      .get('http://localhost:4000/api/admin/perks', {
+      .get(`${API_BASE_URL}/api/admin/perks`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -141,7 +143,7 @@ const AdminPerks = () => {
         setPerks(perksWithIcons);
       })
       .catch((error) => console.error(error));
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleAddPerk = () => {
     const token = localStorage.getItem('token');
@@ -149,7 +151,7 @@ const AdminPerks = () => {
 
     axios
       .post(
-        'http://localhost:4000/api/admin/perks',
+        `${API_BASE_URL}/api/admin/perks`,
         { name: newPerk, icon: newPerkIcon },
         {
           headers: {
@@ -171,7 +173,7 @@ const AdminPerks = () => {
 
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce perk ?')) {
       axios
-        .delete(`http://localhost:4000/api/admin/perks/${perkName}`, {
+        .delete(`${API_BASE_URL}/api/admin/perks/${perkName}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
