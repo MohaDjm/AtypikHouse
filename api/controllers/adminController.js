@@ -1,6 +1,4 @@
 const User = require('../models/User');
-const Property = require('../models/Property');
-const Equipment = require('../models/Equipment');
 
 // Gestion des utilisateurs
 exports.createManager = async (req, res) => {
@@ -156,21 +154,17 @@ exports.addPlace = async (req, res) => {
   try {
     const newPlace = new Place(req.body);
     const savedPlace = await newPlace.save();
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: 'Place added successfully',
-        data: savedPlace,
-      });
+    res.status(201).json({
+      success: true,
+      message: 'Place added successfully',
+      data: savedPlace,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Erreur lors de l'ajout du lieu",
-        error,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de l'ajout du lieu",
+      error,
+    });
   }
 };
 
@@ -226,34 +220,6 @@ exports.deletePlace = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la suppression du lieu',
-      error,
-    });
-  }
-};
-
-// Gestion des commentaires
-exports.getAllComments = async (req, res) => {
-  try {
-    // Logique pour récupérer tous les commentaires
-    res.status(200).json({ success: true, data: comments });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la récupération des commentaires',
-      error,
-    });
-  }
-};
-
-exports.deleteComment = async (req, res) => {
-  try {
-    const { id } = req.params;
-    // Logique pour supprimer un commentaire
-    res.status(200).json({ success: true, message: 'Commentaire supprimé' });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la suppression du commentaire',
       error,
     });
   }

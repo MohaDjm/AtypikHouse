@@ -7,9 +7,6 @@ const cookieParser = require('cookie-parser');
 const cloudinary = require('cloudinary').v2;
 const adminRoutes = require('./routes/admin');
 
-console.log('DB_URL:', process.env.DB_URL);
-console.log('CLIENT_URL:', process.env.CLIENT_URL);
-
 // Connexion à la base de données
 connectWithDB();
 
@@ -52,6 +49,7 @@ app.use(express.json());
 // Utilisation des routes API
 app.use('/api/users', require('./routes/user'));
 app.use('/api/admin', adminRoutes);
+app.use('/api/places', require('./routes/place'));
 
 // Route de base
 app.use('/', require('./routes'));

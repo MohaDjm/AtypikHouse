@@ -1,5 +1,3 @@
-// admin.js
-
 const express = require('express');
 const adminController = require('../controllers/adminController');
 const { isAdmin, isLoggedIn } = require('../middlewares/user');
@@ -26,10 +24,6 @@ router.get('/places', adminController.getAllPlaces);
 router.post('/places', adminController.addPlace);
 router.put('/places/:id', adminController.updatePlace);
 router.delete('/places/:id', adminController.deletePlace);
-
-// Routes pour la gestion des commentaires et du profil utilisateur
-router.get('/comments', adminController.getAllComments);
-router.delete('/delete-comment/:id', adminController.deleteComment);
 
 router.put('/update-profile/:id', adminController.updateUserProfile);
 

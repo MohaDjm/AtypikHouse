@@ -44,7 +44,7 @@ exports.userPlaces = async (req, res) => {
     res.status(200).json(await Place.find({ owner: id }));
   } catch (err) {
     res.status(500).json({
-      message: 'Internal serever error',
+      message: 'Internal server error',
     });
   }
 };
@@ -120,7 +120,7 @@ exports.singlePlace = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({
-      message: 'Internal serever error',
+      message: 'Internal server error',
     });
   }
 };
@@ -130,15 +130,146 @@ exports.searchPlaces = async (req, res) => {
   try {
     const searchword = req.params.key;
 
-    if (searchword === '') return res.status(200).json(await Place.find())
+    if (searchword === '') return res.status(200).json(await Place.find());
 
-    const searchMatches = await Place.find({ address: { $regex: searchword, $options: "i" } })
+    const searchMatches = await Place.find({
+      address: { $regex: searchword, $options: 'i' },
+    });
 
     res.status(200).json(searchMatches);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({
-      message: 'Internal serever error 1',
+      message: 'Internal server error',
     });
   }
-}
+};
+
+// Gestion des commentaires
+// Méthode pour récupérer tous les avis
+exports.getAllReviews = async (req, res) => {
+  try {
+    const places = await Place.find()
+      .populate('reviews.user', 'name')
+      .populate('reviews.replies.user', 'name');
+    const allReviews = places.reduce(
+      (acc, place) => [...acc, ...place.reviews],
+      []
+    );
+    res.status(200).json({ success: true, data: allReviews });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Erreur interne du serveur', error });
+  }
+};
+
+// Méthode pour récupérer les avis d'un lieu spécifique
+exports.getReviewsByPlace = async (req, res) => {
+  try {
+    const { placeId } = req.params;
+    const place = await Place.findById(placeId)
+      .populate('reviews.user', 'name')
+      .populate('reviews.replies.user', 'name');
+    if (!place || place.reviews.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Aucun avis trouvé pour ce lieu.' });
+    }
+    res.status(200).json({ success: true, data: place.reviews });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Méthode pour supprimer un avis
+exports.deleteReview = async (req, res) => {
+  try {
+    const { placeId, reviewId } = req.params;
+    const place = await Place.findByIdAndUpdate(
+      placeId,
+      { $pull: { reviews: { _id: reviewId } } },
+      { new: true }
+    );
+    if (!place) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Lieu ou avis non trouvé.' });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: 'Avis supprimé avec succès' });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la suppression de l'avis",
+      error,
+    });
+  }
+};
+
+// Méthode pour répondre à un avis
+// Méthode pour répondre à un avis
+exports.replyToReview = async (req, res) => {
+  try {
+    const { placeId, reviewId } = req.params; // IDs du lieu et de l'avis
+    const { comment } = req.body;
+
+    const place = await Place.findOneAndUpdate(
+      { _id: placeId, 'reviews._id': reviewId },
+      { $push: { 'reviews.$.replies': { user: req.user._id, comment } } },
+      { new: true }
+    )
+      .populate('reviews.user', 'name')
+      .populate('reviews.replies.user', 'name');
+
+    if (!place) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Lieu ou avis non trouvé.' });
+    }
+
+    const updatedReview = place.reviews.id(reviewId);
+    res.status(201).json({ success: true, data: updatedReview });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la réponse à l'avis",
+      error,
+    });
+  }
+};
+
+// Méthode pour ajouter un avis
+exports.addReview = async (req, res) => {
+  try {
+    const { placeId } = req.params;
+    const { rating, comment } = req.body;
+
+    const place = await Place.findById(placeId);
+    if (!place) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Place not found.' });
+    }
+
+    const newReview = {
+      user: req.user._id,
+      rating,
+      comment,
+    };
+
+    place.reviews.push(newReview);
+    await place.save();
+
+    // Populate user data
+    await place.populate('reviews.user', 'name');
+    await place.populate('reviews.replies.user', 'name');
+
+    res.status(201).json({ success: true, data: place.reviews });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Error adding review', error });
+  }
+};

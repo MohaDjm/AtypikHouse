@@ -8,19 +8,29 @@ const {
   updatePlace,
   singlePlace,
   userPlaces,
-  searchPlaces
+  searchPlaces,
+  addReview,
+  getReviewsByPlace,
+  replyToReview,
+  deleteReview,
 } = require('../controllers/placeController');
 
+// Public route to get all places
 router.route('/').get(getPlaces);
 
-// Protected routes (user must be logged in)
+// Protected routes for managing places
 router.route('/add-places').post(isLoggedIn, addPlace);
 router.route('/user-places').get(isLoggedIn, userPlaces);
 router.route('/update-place').put(isLoggedIn, updatePlace);
 
-// Not Protected routed but sequence should not be interfered with above routes
-router.route('/:id').get(singlePlace);
-router.route('/search/:key').get(searchPlaces)
+// Routes pour les avis (reviews)
+router.post('/:placeId/reviews', isLoggedIn, addReview);
+router.get('/:placeId/reviews', getReviewsByPlace);
+router.post('/:placeId/reviews/:reviewId/reply', isLoggedIn, replyToReview);
+router.delete('/:placeId/reviews/:reviewId', isLoggedIn, deleteReview);
 
+// Public routes for accessing a single place and searching
+router.route('/:id').get(singlePlace);
+router.route('/search/:key').get(searchPlaces);
 
 module.exports = router;
