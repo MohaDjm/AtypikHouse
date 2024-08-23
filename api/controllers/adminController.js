@@ -138,49 +138,94 @@ exports.deletePerk = async (req, res) => {
 };
 
 // Gestion des propriétés
-exports.addProperty = async (req, res) => {
+
+// Get all places
+exports.getAllPlaces = async (req, res) => {
   try {
-    const { name, type, required } = req.body;
-    const property = new Property({ name, type, required });
-    await property.save();
-    res.status(201).json({ success: true, data: property });
+    const places = await Place.find();
+    res.status(200).json({ success: true, data: places });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: 'Erreur interne du serveur', error });
+  }
+};
+
+// Add a place
+exports.addPlace = async (req, res) => {
+  try {
+    const newPlace = new Place(req.body);
+    const savedPlace = await newPlace.save();
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: 'Place added successfully',
+        data: savedPlace,
+      });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Erreur lors de l'ajout du lieu",
+        error,
+      });
+  }
+};
+
+// Update a place
+exports.updatePlace = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    const updatedPlace = await Place.findByIdAndUpdate(id, updatedData, {
+      new: true,
+    });
+
+    if (!updatedPlace) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Place not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Place updated successfully',
+      data: updatedPlace,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Erreur lors de l'ajout de la propriété",
+      message: 'Erreur lors de la mise à jour du lieu',
       error,
     });
   }
 };
 
-exports.updateProperty = async (req, res) => {
+// Delete a place
+exports.deletePlace = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, type, required } = req.body;
-    const property = await Property.findByIdAndUpdate(
-      id,
-      { name, type, required },
-      { new: true }
-    );
-    res.status(200).json({ success: true, data: property });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erreur lors de la mise à jour de la propriété',
-      error,
-    });
-  }
-};
 
-exports.deleteProperty = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Property.findByIdAndDelete(id);
-    res.status(200).json({ success: true, message: 'Propriété supprimée' });
+    const deletedPlace = await Place.findByIdAndDelete(id);
+
+    if (!deletedPlace) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Place not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Place deleted successfully',
+      data: deletedPlace,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Erreur lors de la suppression de la propriété',
+      message: 'Erreur lors de la suppression du lieu',
       error,
     });
   }

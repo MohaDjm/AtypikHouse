@@ -21,9 +21,11 @@ router.get('/perks', adminController.getAllPerks);
 router.post('/perks', adminController.addPerk);
 router.delete('/perks/:name', adminController.deletePerk);
 
-router.post('/add-property', adminController.addProperty);
-router.put('/update-property/:id', adminController.updateProperty);
-router.delete('/delete-property/:id', adminController.deleteProperty);
+// Routes pour la gestion des propriétés
+router.get('/places', adminController.getAllPlaces);
+router.post('/places', adminController.addPlace);
+router.put('/places/:id', adminController.updatePlace);
+router.delete('/places/:id', adminController.deletePlace);
 
 // Routes pour la gestion des commentaires et du profil utilisateur
 router.get('/comments', adminController.getAllComments);

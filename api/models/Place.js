@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const placeSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.ObjectId,
-    ref: "user",
+    ref: 'user',
     required: true,
   },
   title: {
@@ -34,8 +34,20 @@ const placeSchema = new mongoose.Schema({
     required: true,
   },
   amenities: [{ type: String }],
+  customProperties: [
+    {
+      name: { type: String, required: true },
+      type: {
+        type: String,
+        enum: ['text', 'number', 'boolean'],
+        required: true,
+      },
+      required: { type: Boolean, default: false },
+      value: mongoose.Mixed,
+    },
+  ],
 });
 
-const Place = mongoose.model("Place", placeSchema);
+const Place = mongoose.model('Place', placeSchema);
 
 module.exports = Place;
