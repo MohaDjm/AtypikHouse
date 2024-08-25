@@ -252,3 +252,83 @@ exports.getAllUsers = async (req, res) => {
       .json({ success: false, message: 'Erreur interne du serveur', error });
   }
 };
+
+// Gestion de la modération des avis
+exports.getAllReviews = async (req, res) => {
+  try {
+    console.log('Début de getAllReviews');
+    const places = await Place.find()
+      .populate('reviews.user', 'name')
+      .populate('reviews.replies.user', 'name');
+    console.log('Places trouvées:', places.length);
+
+    const allReviews = places.reduce(
+      (acc, place) => [...acc, ...place.reviews],
+      []
+    );
+    console.log('Total des avis:', allReviews.length);
+
+    res.status(200).json({ success: true, data: allReviews });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des avis:', error);
+    res
+      .status(500)
+      .json({ success: false, message: 'Erreur interne du serveur', error });
+  }
+};
+
+exports.deleteReview = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const result = await Place.updateMany(
+      {},
+      { $pull: { reviews: { _id: reviewId } } }
+    );
+
+    if (result.nModified === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Aucun avis trouvé avec cet ID',
+      });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: 'Commentaire supprimé avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression du commentaire:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la suppression du commentaire',
+      error,
+    });
+  }
+};
+
+exports.deleteReply = async (req, res) => {
+  try {
+    const { reviewId, replyId } = req.params;
+    const result = await Place.updateOne(
+      { 'reviews._id': reviewId },
+      { $pull: { 'reviews.$.replies': { _id: replyId } } }
+    );
+
+    if (result.nModified === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Aucune réponse trouvée avec cet ID',
+      });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: 'Réponse supprimée avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de la réponse:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors de la suppression de la réponse',
+      error,
+    });
+  }
+};

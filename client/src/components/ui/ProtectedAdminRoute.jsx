@@ -1,23 +1,34 @@
 import React, { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../providers/UserProvider';
 
 const ProtectedAdminRoute = ({ children }) => {
   const { user, loading } = useContext(UserContext);
+  const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>; // Ou n'importe quel autre indicateur de chargement
+    return <div>Loading...</div>; // Ou un autre indicateur de chargement
   }
 
-  console.log("Current user:", user);
-  console.log("Is user admin?", user?.isAdmin);
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isCommentsRoute = location.pathname === '/admin/comments';
 
-  if (!user || !user.isAdmin) {
-    // Rediriger vers la page de connexion ou une page d'erreur
+  if (!user) {
     return <Navigate to="/login" />;
   }
 
-  return children;
+  // Autoriser les administrateurs pour toutes les routes admin
+  if (user.isAdmin) {
+    return children;
+  }
+
+  // Autoriser les modérateurs uniquement pour la route des commentaires
+  if (user.role === 'modérateur' && isCommentsRoute) {
+    return children;
+  }
+
+  // Rediriger pour les utilisateurs non autorisés
+  return <Navigate to="/not-authorized" />;
 };
 
 export default ProtectedAdminRoute;

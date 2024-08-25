@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Checks if the user is logged in based on the token and sets the user in the request
+// Vérifie si l'utilisateur est connecté
 exports.isLoggedIn = async (req, res, next) => {
   const authHeader = req.header('Authorization');
   const token =
@@ -30,11 +30,26 @@ exports.isLoggedIn = async (req, res, next) => {
   }
 };
 
-// Checks if the logged-in user is an admin
+// Vérifie si l'utilisateur connecté est admin
 exports.isAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
     res.status(403).send('Access denied');
+  }
+};
+
+// Vérifie si l'utilisateur connecté est soit admin soit modérateur
+exports.isAdminOrModerator = (req, res, next) => {
+  if (
+    req.user &&
+    (req.user.role === 'admin' || req.user.role === 'modérateur')
+  ) {
+    next();
+  } else {
+    res.status(403).json({
+      success: false,
+      message: "Accès refusé : Vous n'avez pas les autorisations nécessaires.",
+    });
   }
 };

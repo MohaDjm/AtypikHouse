@@ -19,7 +19,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminEquipments from './pages/AdminPerks';
 import AdminProperties from './pages/AdminProperties';
-// import AdminComments from './pages/AdminComments';
+import AdminComments from './pages/AdminComments';
 
 import axiosInstance from './utils/axios';
 import { UserProvider } from './providers/UserProvider';
@@ -59,7 +59,7 @@ function App() {
               <Route path="/admin/users" element={<ProtectedAdminRoute><AdminUsers /></ProtectedAdminRoute>} />
               <Route path="/admin/equipments" element={<ProtectedAdminRoute><AdminEquipments /></ProtectedAdminRoute>} />
               <Route path="/admin/properties" element={<ProtectedAdminRoute><AdminProperties /></ProtectedAdminRoute>} />
-              {/* <Route path="/admin/comments" element={<ProtectedAdminRoute><AdminComments /></ProtectedAdminRoute>} /> */}
+              <Route path="/admin/comments" element={<ProtectedAdminRoute><AdminComments /></ProtectedAdminRoute>} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

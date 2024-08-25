@@ -19,6 +19,10 @@ const PlacePage = () => {
 
   const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
+  // Récupérer le nom de l'utilisateur depuis le localStorage
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const userName = storedUser ? storedUser.name : 'Unknown User';
+
   useEffect(() => {
     if (!id) {
       return '';
@@ -73,11 +77,16 @@ const PlacePage = () => {
   const handleReplySubmit = async (reviewId) => {
     const token = localStorage.getItem('token');
 
+    // Récupérer le nom de l'utilisateur depuis le localStorage
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const userName = storedUser ? storedUser.name : 'Unknown User';
+
     try {
       const { data } = await axiosInstance.post(
         `${API_BASE_URL}/api/places/${id}/reviews/${reviewId}/reply`,
         {
           comment: reply[reviewId],
+          userName: userName, // Envoi du nom de l'utilisateur avec la réponse
         },
         {
           headers: {
@@ -153,7 +162,7 @@ const PlacePage = () => {
                   <div key={review._id} className="mb-4 p-4 border rounded">
                     <div className="flex items-center">
                       <span className="font-semibold">
-                        {review.user?.name || 'Unknown User'}
+                        {review.user?.name || userName}
                       </span>
                       <span className="ml-4">Note: {review.rating} / 5</span>
                     </div>
@@ -162,14 +171,18 @@ const PlacePage = () => {
                     {/* Affichage des réponses */}
                     {review.replies?.length > 0 && (
                       <div className="mt-4 ml-4 border-l-2 pl-4">
-                        {review.replies.map((reply) => (
-                          <div key={reply._id} className="mb-2">
-                            <span className="font-semibold">
-                              {reply.user?.name || 'Unknown User'}
-                            </span>
-                            : {reply.comment}
+                        {review.replies?.length > 0 && (
+                          <div className="mt-4 ml-4 border-l-2 pl-4">
+                            {review.replies.map((reply) => (
+                              <div key={reply._id} className="mb-2">
+                                <span className="font-semibold">
+                                  {reply.user?.name || userName}
+                                </span>
+                                : {reply.comment}
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
                     )}
 

@@ -146,23 +146,6 @@ exports.searchPlaces = async (req, res) => {
 };
 
 // Gestion des commentaires
-// Méthode pour récupérer tous les avis
-exports.getAllReviews = async (req, res) => {
-  try {
-    const places = await Place.find()
-      .populate('reviews.user', 'name')
-      .populate('reviews.replies.user', 'name');
-    const allReviews = places.reduce(
-      (acc, place) => [...acc, ...place.reviews],
-      []
-    );
-    res.status(200).json({ success: true, data: allReviews });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ success: false, message: 'Erreur interne du serveur', error });
-  }
-};
 
 // Méthode pour récupérer les avis d'un lieu spécifique
 exports.getReviewsByPlace = async (req, res) => {
@@ -182,33 +165,6 @@ exports.getReviewsByPlace = async (req, res) => {
   }
 };
 
-// Méthode pour supprimer un avis
-exports.deleteReview = async (req, res) => {
-  try {
-    const { placeId, reviewId } = req.params;
-    const place = await Place.findByIdAndUpdate(
-      placeId,
-      { $pull: { reviews: { _id: reviewId } } },
-      { new: true }
-    );
-    if (!place) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Lieu ou avis non trouvé.' });
-    }
-    res
-      .status(200)
-      .json({ success: true, message: 'Avis supprimé avec succès' });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la suppression de l'avis",
-      error,
-    });
-  }
-};
-
-// Méthode pour répondre à un avis
 // Méthode pour répondre à un avis
 exports.replyToReview = async (req, res) => {
   try {
